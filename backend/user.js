@@ -40,7 +40,7 @@ var User = mongoose.model('User', UserSchema, 'UserAuth'); // compile schema to 
 //   await db.collection('UserAuth').insertOne({
 //     name: 'adm3',
 //     password: '1',
-//     token: 'admin-token3',
+//     token: 'admin-token',
 //     roles: 'normal',
 //     introduction: 'Super Maguete!',
 //     // avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',

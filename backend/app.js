@@ -2,6 +2,8 @@ const express = require('express')
 var cors = require('cors')
 const app = express()
 var bodyParser = require('body-parser')
+// 1 - framework de conexão
+const mongoose = require('mongoose')
 const User = require('./user');
 
 
@@ -19,6 +21,9 @@ app.use(cors({
     credentials: true // enable set cookie
 }));
 
+//
+// Login
+//
 app.post('/vue-element-admin/user/login',
   (req, res) => {
   console.log('req.body:', req.body)
@@ -60,69 +65,6 @@ app.post('/vue-element-admin/user/login',
 
  }
 )
-
-app.get('/vue-element-admin/article/list',
-  (req, res) => {
-
-  User.find(function (err, result) {
-    if (err) return console.error(err);
-    console.log(result);
-
-    ret = {"code":20000, "data":{total: result.length, items:result}}
-    res.json(ret)
-  })
-
-
-
-  // db.collection("UserAuth").find({}).toArray(function(err, result) {
-  //   if (err) throw err;
-  //   // console.log(result);
-  //   ret = {"code":20000,"data":{total: result.length, items:result}}
-  //
-  //   res.json(ret)
-  //   // db.close();
-  // });
-
- }
-)
-
-app.post('/vue-element-admin/article/update',
-  (req, res) => {
-
-    var body = req.body
-    // var ObjectID = require('mongoose').ObjectID;
-
-    User.findById(req.body._id).then((model) => {
-            return Object.assign(model, body);
-        }).then((model) => {
-            return model.save();
-        }).then((updatedModel) => {
-            res.json({
-                code:20000,
-                msg: 'model updated',
-                updatedModel
-            });
-        }).catch((err) => {
-            res.send(err);
-        });
-
-    // console.log('myquery:', myquery);
-    //
-    // const ret = User.update(myquery, newvalues);
-    //
-    // console.log('ret.n:', ret.n);
-
-
-    // db.collection("UserAuth").updateMany(myquery, newvalues,{new: true}, function(err, res) {
-    //   if (err) throw err;
-    //   console.log("1 document updated");
-    //   // console.log('res:', res);
-    //   // db.close();
-    // });
-
- }
-)
-
 app.get('/vue-element-admin/user/info',
   (req, res) => {
     var token = req.query.token
@@ -157,8 +99,74 @@ app.get('/vue-element-admin/user/info',
 
   }
 )
-
 app.post('/vue-element-admin/user/logout', (req, res) => res.json({"code":20000,"data":"success"}))
+
+
+//
+//  User
+//
+app.get('/vue-element-admin/user',
+  (req, res) => {
+
+  User.find(function (err, result) {
+    if (err) return console.error(err);
+    console.log(result);
+
+    ret = {"code":20000, "data":{total: result.length, items:result}}
+    res.json(ret)
+  })
+ }
+)
+app.post('/vue-element-admin/user',
+  (req, res) => {
+    var body = req.body
+    console.log('body:', body);
+    // var arr = [{ name: 'Star Wars' }, { name: 'The Empire Strikes Back' }];
+    User.insertMany(body, function(error, docs) {
+      console.log('docs[0]._id:', docs[0]._id);
+      res.json({
+          code:20000,
+          msg: 'ok',
+          ret: docs[0]
+      });
+    });
+ }
+)
+app.patch('/vue-element-admin/user',
+  (req, res) => {
+
+    var body = req.body
+
+    User.findById(req.body._id).then((model) => {
+            return Object.assign(model, body);
+        }).then((model) => {
+            return model.save();
+        }).then((updatedModel) => {
+            res.json({
+                code:20000,
+                msg: 'model updated',
+                updatedModel
+            });
+        }).catch((err) => {
+            res.send(err);
+        });
+ }
+)
+app.delete('/vue-element-admin/user', (req, res) => {
+  console.log('req.query.id:', req.query.id);
+
+  User.deleteOne({ _id: req.query.id }, function (err) {
+    if (err) return handleError(err);
+    // deleted at most one tank document
+  });
+
+
+  res.json({
+    code: 20000,
+    msg: 'Deleted'
+  });
+});
+
 
 
 

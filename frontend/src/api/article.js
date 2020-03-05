@@ -24,9 +24,17 @@ export function fetchPv(pv) {
   })
 }
 
-export function createArticle(data) {
+export function deleteID(id) {
   return request({
-    url: '/vue-element-admin/article/create',
+    url: '/vue-element-admin/user',
+    method: 'delete',
+    params: { id }
+  })
+}
+
+export function create(data) {
+  return request({
+    url: '/vue-element-admin/create',
     method: 'post',
     data
   })

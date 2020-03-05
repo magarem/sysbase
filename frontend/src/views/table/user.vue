@@ -81,12 +81,12 @@
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
             Edit
           </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+          <!-- <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
             Publish
           </el-button>
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
             Draft
-          </el-button>
+          </el-button> -->
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
@@ -142,13 +142,13 @@
 </template>
 
 <script>
-import { fetchList, deleteID, create, update } from '@/api/user'
+import { fetchList, create, update, deleteByID } from '@/api/user'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: 'ComplexTable',
+  name: 'User',
   components: { Pagination },
   directives: { waves },
   filters: {
@@ -269,14 +269,18 @@ export default {
       })
     },
     createData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => { // form verify
         if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          create(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
+          // this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
+          // this.temp.author = 'vue-element-admin'
+
+          // Send new record do server
+          create(this.temp).then((ret) => {
+            console.log('ret.ret._id:', ret.ret._id);
+            this.temp._id = ret.ret._id // Add id returned
+            this.list.unshift(this.temp) // Add record in local array
+            this.dialogFormVisible = false // Close de create window
+            this.$notify({ // Show sucess message
               title: 'Success',
               message: 'Created Successfully',
               type: 'success',
@@ -325,7 +329,7 @@ export default {
       // })
       // console.log('row:', row);
       // // call server to delete record
-      deleteID(row._id).then(response => {
+      deleteByID(row._id).then(response => {
         // this.pvData = response.data.pvData
 
         // delete from local list
